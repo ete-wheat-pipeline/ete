@@ -10,7 +10,7 @@ Rules for every step below:
 
 The detailed guide (verification status, troubleshooting, demonstration) is `docs/GUIDE_DETAILED.md`.
 
-## 0. Input files
+## Before you begin: input data
 `0_STARTING_FILES/` must contain:
 ```
 Chr1A.fasta
@@ -28,7 +28,9 @@ RNA_READS/<run>_1.500k.fastq.gz and <run>_2.500k.fastq.gz   (9 SRA runs)
 ls -R 0_STARTING_FILES
 ```
 
-## 1. Install conda (skip if `conda --version` works)
+## Software and execution
+
+### Install conda (skip if `conda --version` works)
 ```bash
 curl -L -O https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
 bash Miniforge3-Linux-x86_64.sh -b -p ~/miniforge3
@@ -36,7 +38,7 @@ bash Miniforge3-Linux-x86_64.sh -b -p ~/miniforge3
 exec bash
 ```
 
-## 2. Create the environments (once per computer, one command at a time)
+### Create the environments (once per computer, one command at a time)
 ```bash
 conda create -y -n dante -c conda-forge -c bioconda -c petrnovak dante=0.2.12
 conda create -y -n dante_ltr -c conda-forge -c bioconda -c petrnovak dante_ltr=0.6.4.0
@@ -44,14 +46,16 @@ conda create -y -n dante_tir -c conda-forge -c r -c bioconda -c petrnovak dante_
 conda create -y -n ete -c conda-forge -c bioconda mafft=7.526 hmmer==3.3 bwa=0.7.19 samtools seqkit=2.1.0 blast python=3.12 pysam scipy r-base r-tidyverse bioconductor-rtracklayer bioconductor-biostrings bioconductor-genomicalignments
 ```
 
-## 3. Settings (repeat in every new terminal)
+### Settings (repeat in every new terminal)
 `T` is the number of CPU threads. DANTE_LTR uses up to about 1 GB of RAM per thread, so use `T=2` on a PC with little memory.
 ```bash
 export LC_ALL=C
 T=10
 ```
 
-## 4. TE annotation: DANTE, DANTE_LTR, DANTE_TIR
+## TE reference preparation and protein screening
+
+### Step 0. Build the full-length TE reference
 ```bash
 conda activate dante
 mkdir -p 1_DANTE_suite/DANTE
@@ -77,7 +81,7 @@ The pipeline uses `1_DANTE_suite/DANTE_LTR/ltr_library/TE_DLplus.fasta` and `1_D
 
 `dante_ltr_to_library` ends with an mmseqs2 clustering that needs several GB of RAM. If only that last step fails, `TE_DLplus.fasta` is already complete.
 
-## 5. Domain extraction and alignment
+### Step 1. Select intact TE coding regions
 ```bash
 conda activate ete
 mkdir -p 2_EXTRACTED_DOMAINS
@@ -85,32 +89,41 @@ cd 2_EXTRACTED_DOMAINS
 Rscript ../SCRIPT/_1_LTR_protein_domain_concatenator.R ../1_DANTE_suite/DANTE_LTR/DANTE_LTR.gff3
 Rscript ../SCRIPT/_2_TIR_tpase_domain_extractor.R ../1_DANTE_suite/TIR/DANTE_TIR_final.gff3 ../1_DANTE_suite/DANTE/DANTE_filtered_output.gff3
 cd ..
+```
 
+### Step 2. Build HMMs from overlapping alignment windows
+```bash
 mkdir -p 3_ALIGNMENT
 cd 3_ALIGNMENT
 bash ../SCRIPT/_3_domain_aligner.sh ../2_EXTRACTED_DOMAINS/ $T
 cd ..
-```
 
-## 6. HMMs, proteome scan and putative ETEs
-```bash
 conda activate ete
 mkdir -p 4_ALIGNMENT_PARSING_HMM_BUILD
 cd 4_ALIGNMENT_PARSING_HMM_BUILD
 Rscript ../SCRIPT/_4_sliding_and_hmm_build_overhang_win.R ../3_ALIGNMENT $T
 cd ..
+```
 
+### Step 3. Identify HMM-positive protein isoforms
+```bash
 mkdir -p 5_HMM_PROTEOME_SCANNING
 cd 5_HMM_PROTEOME_SCANNING
 bash ../SCRIPT/_5_massive_hmm_search.sh ../0_STARTING_FILES/fine_cleaned_pep.fasta ../4_ALIGNMENT_PARSING_HMM_BUILD $T
 cd ..
 
 Rscript SCRIPT/_6_domtblout_concatenator_filter_v2.R -d 5_HMM_PROTEOME_SCANNING -p 0_STARTING_FILES/fine_cleaned_pep.fasta -c 0_STARTING_FILES/fine_cleaned_cds.fasta -g 0_STARTING_FILES/fine_cleaned_genes.fasta -m 0_STARTING_FILES/fine_cleaned_mRNA.fasta -o 6_SCANNING_RESULT
+```
+
+### Step 4. Extract putative ETE genes
+```bash
 grep '>' 6_SCANNING_RESULT/GENE_putative_ete.fasta | sed 's/^>//; s/ .*//' | sort -u > 6_SCANNING_RESULT/all_putative_ETEs_ids.txt
 wc -l 6_SCANNING_RESULT/all_putative_ETEs_ids.txt
 ```
 
-## 7. Validation 1: similarity to known TEs
+## Validation procedure
+
+### Step 5. Assess similarity to known TEs
 ```bash
 conda activate ete
 mkdir -p 7_TE_SIMILARITY_VALIDATION
@@ -131,7 +144,7 @@ sed -i '1i locus\tsimilarity_score' similarity_score_final.tsv
 cd ..
 ```
 
-## 8. Validation 2: siRNA targeting
+### Step 6. Test 24-nt siRNA targeting
 ```bash
 conda activate ete
 mkdir -p 8_SIRNA_VALIDATION
@@ -150,7 +163,7 @@ python ../SCRIPT/_8_score_ete_sirna.py --ete-list ../6_SCANNING_RESULT/all_putat
 cd ..
 ```
 
-## 9. Validation 3: repetitiveness (genomic reads)
+### Step 7. Assess repetitiveness from genomic read depth
 `bwa mem` keeps the original thread count (`-t 28`): its batch size depends on the number of threads and slightly changes the paired-end mapping.
 ```bash
 conda activate ete
@@ -178,8 +191,8 @@ Rscript ../SCRIPT/_9_repetitiveness_score_.R mapped_TEonly.filtered.bam mapped_g
 cd ..
 ```
 
-## 10. Validation 4: expression (RNA-seq)
-`bwa mem` keeps the original thread count (`-t 22`) for the same reason as in step 9.
+### Step 8. Assess expression from RNA-seq data
+`bwa mem` keeps the original thread count (`-t 22`) for the same reason as in Step 7.
 ```bash
 conda activate ete
 mkdir -p 10_EXPRESSION_VALIDATION/ref 10_EXPRESSION_VALIDATION/2_mapped 10_EXPRESSION_VALIDATION/3_filtered 10_EXPRESSION_VALIDATION/counts
@@ -201,21 +214,23 @@ Rscript ../SCRIPT/_10_score_rpkm_table.R ../6_SCANNING_RESULT/GENE_putative_ete.
 cd ..
 ```
 
-## 11. Final results
+### Step 9. Validate putative ETEs using the cumulative score
 ```bash
 conda activate ete
 mkdir -p 11_RESULTS
 cd 11_RESULTS
 Rscript ../SCRIPT/_11_final_score_and_check_aggregator.R ..
+cd ..
+```
+
+### Step 10. Characterize validated ETE
+```bash
+cd 11_RESULTS
 bash ../SCRIPT/_11_te_derived_fusion.sh
 cd ..
 ```
-Output, in `11_RESULTS/`:
-- `score_per_locus.tsv`: one row per ETE locus;
-- `risultato_finale_validazione_filtrabile.tsv`: one row per isoform;
-- `classe4_te_derived_fusion.tsv`: class-4 split.
 
-Column meanings are in `docs/DATA_DICTIONARY.md`.
+
 
 **Published run, for comparison:**
 
@@ -225,5 +240,5 @@ Column meanings are in `docs/DATA_DICTIONARY.md`.
 | DANTE_LTR elements | 30,439 |
 | TIR elements | 176 |
 | window HMMs | 522 |
-| putative ETE loci (step 6) | 671 |
+| putative ETE loci (Step 4) | 671 |
 | `SCORE_SUM = 4` (class 4) | 219: 6 TE-derived host genes, 213 TE–gene fusions |

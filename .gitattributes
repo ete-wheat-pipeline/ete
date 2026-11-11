@@ -1,2 +1,1 @@
 * -text
-0_STARTING_FILES/Chr1A.fasta filter=lfs diff=lfs merge=lfs -text

@@ -10,10 +10,18 @@ Rules for every step below:
 
 The detailed guide (verification status, troubleshooting, demonstration) is `docs/GUIDE_DETAILED.md`.
 
+## Before you begin: rebuild the genome
+GitHub does not accept files larger than 100 MB, so the genome `Chr1A.fasta` (612 MB) is stored compressed and split into four parts: `0_STARTING_FILES/Chr1A.fasta.gz.part_aa` ... `part_ad`. Rebuild it once, from the folder that contains this file (works with both `git clone` and "Download ZIP"; no extra software needed):
+```bash
+cat 0_STARTING_FILES/Chr1A.fasta.gz.part_* | gunzip > 0_STARTING_FILES/Chr1A.fasta
+sha256sum 0_STARTING_FILES/Chr1A.fasta
+```
+The checksum must be `0757ee471d54348cf1c641141a1a055dd169095dbd636227ab4072257990b904`. If it differs, one of the parts is missing or incomplete: download the repository again.
+
 ## Before you begin: input data
 `0_STARTING_FILES/` must contain:
 ```
-Chr1A.fasta
+Chr1A.fasta   (rebuilt in the previous section)
 fine_cleaned_gff.gff3
 fine_cleaned_genes.fasta
 fine_cleaned_mRNA.fasta
@@ -74,7 +82,7 @@ cd ../..
 
 conda activate dante_tir
 cd 1_DANTE_suite
-dante_tir.py -g /home/samuel/Chr1A_github/1_DANTE_suite/DANTE/DANTE_filtered_output.gff3 -f /home/samuel/Chr1A_github/0_STARTING_FILES/Chr1A.fasta -o TIR -c $T
+dante_tir.py -g DANTE/DANTE_filtered_output.gff3 -f ../0_STARTING_FILES/Chr1A.fasta -o TIR -c $T
 cd ..
 ```
 The pipeline uses `1_DANTE_suite/DANTE_LTR/ltr_library/TE_DLplus.fasta` and `1_DANTE_suite/TIR/DANTE_TIR_final.*`.
@@ -128,7 +136,8 @@ wc -l 6_SCANNING_RESULT/all_putative_ETEs_ids.txt
 conda activate ete
 mkdir -p 7_TE_SIMILARITY_VALIDATION
 cd 7_TE_SIMILARITY_VALIDATION
-cat ../1_DANTE_suite/DANTE_LTR/ltr_library/TE_DLplus.fasta ../1_DANTE_suite/DANTE_TIR/TIR/DANTE_TIR_final.fasta > all_TE.fasta
+cat ../1_DANTE_suite/DANTE_LTR/ltr_library/TE_DLplus.fasta ../1_DANTE_suite/TIR/DANTE_TIR_final.fasta > all_TE.fasta
+grep -c '>' ../1_DANTE_suite/TIR/DANTE_TIR_final.fasta   # must print the number of TIR elements (176 in the published run), not an error
 makeblastdb -in all_TE.fasta -dbtype nucl
 blastn -task dc-megablast -query ../6_SCANNING_RESULT/GENE_putative_ete.fasta -db all_TE.fasta -evalue 1e-5 -dust no -outfmt 6 -num_threads $T -out step1_genes_vs_TE.tsv
 awk -F'\t' '$3 >= 70 && $4 >= 70 {print $1}' step1_genes_vs_TE.tsv | sort -u > step1_hits.txt

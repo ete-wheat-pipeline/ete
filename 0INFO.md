@@ -8,8 +8,6 @@ Rules for every step below:
 - Start from a folder that contains nothing else (no old result folders).
 - On a remote server, run inside `screen` so that a dropped connection does not stop the run.
 
-The detailed guide (verification status, troubleshooting, demonstration) is `docs/GUIDE_DETAILED.md`.
-
 ## Before you begin: rebuild the genome
 GitHub does not accept files larger than 100 MB, so the genome `Chr1A.fasta` (612 MB) is stored compressed and split into four parts: `0_STARTING_FILES/Chr1A.fasta.gz.part_aa` ... `part_ad`. Rebuild it once, from the folder that contains this file (works with both `git clone` and "Download ZIP"; no extra software needed):
 ```bash
@@ -190,17 +188,14 @@ cd ..
 conda activate ete
 mkdir -p 9_SIRNA_VALIDATION
 cd 9_SIRNA_VALIDATION
-cp ../0_STARTING_FILES/siRNA24_filtered_unique_DNA.fasta ../0_STARTING_FILES/fine_cleaned_genes.fasta .
-bwa index fine_cleaned_genes.fasta
+cp ../0_STARTING_FILES/siRNA24_filtered_unique_DNA.fasta .
 bwa index ../6_SCANNING_RESULT/GENE_putative_ete.fasta
 bwa index ../6_SCANNING_RESULT/MRNA_putative_ete.fasta
-bwa aln -t $T fine_cleaned_genes.fasta siRNA24_filtered_unique_DNA.fasta > sirna_vs_all_genes.sai
-bwa samse -n 500 fine_cleaned_genes.fasta sirna_vs_all_genes.sai siRNA24_filtered_unique_DNA.fasta > sirna_vs_all_genes.sam
 bwa aln -t $T ../6_SCANNING_RESULT/GENE_putative_ete.fasta siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_genes.sai
 bwa samse -n 500 ../6_SCANNING_RESULT/GENE_putative_ete.fasta sirna_vs_ETE_genes.sai siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_genes.sam
 bwa aln -t $T ../6_SCANNING_RESULT/MRNA_putative_ete.fasta siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_exons.sai
 bwa samse -n 500 ../6_SCANNING_RESULT/MRNA_putative_ete.fasta sirna_vs_ETE_exons.sai siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_exons.sam
-python ../SCRIPT/_9_score_ete_sirna.py --ete-list ../6_SCANNING_RESULT/all_putative_ETEs_ids.txt --sam-ete-genes sirna_vs_ETE_genes.sam --sam-ete-exons sirna_vs_ETE_exons.sam --sam-all-genes sirna_vs_all_genes.sam --all-genes-fasta fine_cleaned_genes.fasta -o sirna_score.tsv
+python ../SCRIPT/_9_score_ete_sirna.py --ete-list ../6_SCANNING_RESULT/all_putative_ETEs_ids.txt --sam-ete-genes sirna_vs_ETE_genes.sam --sam-ete-exons sirna_vs_ETE_exons.sam -o sirna_score.tsv
 cd ..
 ```
 

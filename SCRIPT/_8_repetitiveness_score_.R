@@ -1,13 +1,23 @@
 #!/usr/bin/env Rscript
 
+# _8_repetitiveness_score_.R
+#
+# Repetitiveness validation of the putative ETEs. Genomic DNA reads mapped
+# (and filtered) against (A) all genes and (B) the TE library give a mean
+# depth per sequence; the TE depth quartiles set the thresholds:
+#   depth <= Q1(TE)        -> repetitivity_score = +1
+#   Q1(TE) < depth <= Q3   -> repetitivity_score =  0
+#   depth >  Q3(TE)        -> repetitivity_score = -1
+#
 # Usage:
-#   Rscript coverage_metrics_score.R <bam_TE> <bam_genes> <ETE_list>
+#   Rscript _8_repetitiveness_score_.R <bam_TE> <bam_genes> <ETE_list>
 #
 # Example:
-#   Rscript coverage_metrics_score.R mapped_TEonly.filtered.bam \
-#       mapped_genes.filtered.bam putative_ete_gene_list.txt
+#   Rscript _8_repetitiveness_score_.R mapped_TEonly.filtered.bam \
+#       mapped_genes.filtered.bam all_putative_ETEs_ids.txt
 #
-# The result is saved in the directory from which Rscript is run.
+# The result (repetitivity_result.tsv) is saved in the directory from
+# which Rscript is run.
 
 # ---------------------------------------------------------------------------
 # Command-line arguments
@@ -18,7 +28,7 @@ if (length(args) != 3) {
   stop(
     paste(
       "Usage:",
-      "Rscript coverage_metrics_score.R <bam_TE> <bam_genes> <ETE_list>",
+      "Rscript _8_repetitiveness_score_.R <bam_TE> <bam_genes> <ETE_list>",
       sep = "\n"
     ),
     call. = FALSE
@@ -97,8 +107,7 @@ compute_coverage_metrics <- function(reads_subset) {
 te_cov <- compute_coverage_metrics(reads_te) %>%
   filter(grepl("^(LTR|TIR)_", seqname))
 
-gene_cov <- compute_coverage_metrics(reads_genes) %>%
-  filter(grepl("^TraesCS", seqname))
+gene_cov <- compute_coverage_metrics(reads_genes)
 
 # The ETEs are taken from gene_cov, so ETEs with depth = 0
 # stay in the table.
@@ -134,4 +143,3 @@ table(result$repetitivity_score)
 write_tsv(result, output_file)
 
 cat("\nResult saved to:\n", output_file, "\n", sep = "")
-

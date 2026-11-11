@@ -131,6 +131,10 @@ wc -l 6_SCANNING_RESULT/all_putative_ETEs_ids.txt
 
 ## Validation procedure
 
+The four validations below are independent of each other: each one gives every putative ETE a score of +1, 0 or -1, and Step 9 adds them up (`SCORE_SUM`).
+- **Structural validation** (Steps 5-6): similarity to known TEs and repetitiveness in the genome, both measured against the DANTE TE library.
+- **Functional validation** (Steps 7-8): targeting by 24-nt siRNAs and expression in RNA-seq data.
+
 ### Step 5. Assess similarity to known TEs
 ```bash
 conda activate ete
@@ -153,31 +157,12 @@ sed -i '1i locus\tsimilarity_score' similarity_score_final.tsv
 cd ..
 ```
 
-### Step 6. Test 24-nt siRNA targeting
-```bash
-conda activate ete
-mkdir -p 8_SIRNA_VALIDATION
-cd 8_SIRNA_VALIDATION
-cp ../0_STARTING_FILES/siRNA24_filtered_unique_DNA.fasta ../0_STARTING_FILES/fine_cleaned_genes.fasta .
-bwa index fine_cleaned_genes.fasta
-bwa index ../6_SCANNING_RESULT/GENE_putative_ete.fasta
-bwa index ../6_SCANNING_RESULT/MRNA_putative_ete.fasta
-bwa aln -t $T fine_cleaned_genes.fasta siRNA24_filtered_unique_DNA.fasta > sirna_vs_all_genes.sai
-bwa samse -n 500 fine_cleaned_genes.fasta sirna_vs_all_genes.sai siRNA24_filtered_unique_DNA.fasta > sirna_vs_all_genes.sam
-bwa aln -t $T ../6_SCANNING_RESULT/GENE_putative_ete.fasta siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_genes.sai
-bwa samse -n 500 ../6_SCANNING_RESULT/GENE_putative_ete.fasta sirna_vs_ETE_genes.sai siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_genes.sam
-bwa aln -t $T ../6_SCANNING_RESULT/MRNA_putative_ete.fasta siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_exons.sai
-bwa samse -n 500 ../6_SCANNING_RESULT/MRNA_putative_ete.fasta sirna_vs_ETE_exons.sai siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_exons.sam
-python ../SCRIPT/_8_score_ete_sirna.py --ete-list ../6_SCANNING_RESULT/all_putative_ETEs_ids.txt --sam-ete-genes sirna_vs_ETE_genes.sam --sam-ete-exons sirna_vs_ETE_exons.sam --sam-all-genes sirna_vs_all_genes.sam --all-genes-fasta fine_cleaned_genes.fasta -o sirna_score.tsv
-cd ..
-```
-
-### Step 7. Assess repetitiveness from genomic read depth
+### Step 6. Assess repetitiveness from genomic read depth
 `bwa mem` keeps the original thread count (`-t 28`): its batch size depends on the number of threads and slightly changes the paired-end mapping.
 ```bash
 conda activate ete
-mkdir -p 9_REPETITIVENESS_VALIDATION
-cd 9_REPETITIVENESS_VALIDATION
+mkdir -p 8_REPETITIVENESS_VALIDATION
+cd 8_REPETITIVENESS_VALIDATION
 cp ../1_DANTE_suite/DANTE_LTR/ltr_library/TE_DLplus.fasta ../1_DANTE_suite/TIR/DANTE_TIR_final.fasta ../0_STARTING_FILES/fine_cleaned_genes.fasta .
 awk '/^>/{print ">LTR_" ++i; next}{print}' TE_DLplus.fasta > cleaned_LTR.fasta
 awk '/^>/{print ">TIR_" ++i; next}{print}' DANTE_TIR_final.fasta > cleaned_TIR.fasta
@@ -192,16 +177,35 @@ samtools index mapped_genes.sorted.bam
 bwa mem -t 28 -A 1 -B 1 -O 1,1 -E 1,1 -k 15 -T 20 TE_only.fasta $R1 $R2 > mapped_TEonly.sam
 samtools sort -@ $T -o mapped_TEonly.sorted.bam mapped_TEonly.sam
 samtools index mapped_TEonly.sorted.bam
-python ../SCRIPT/_9_bam_length_similarity_filter.py mapped_genes.sorted.bam mapped_genes.filtered.bam
-python ../SCRIPT/_9_bam_length_similarity_filter.py mapped_TEonly.sorted.bam mapped_TEonly.filtered.bam
+python ../SCRIPT/_8_bam_length_similarity_filter.py mapped_genes.sorted.bam mapped_genes.filtered.bam
+python ../SCRIPT/_8_bam_length_similarity_filter.py mapped_TEonly.sorted.bam mapped_TEonly.filtered.bam
 samtools index mapped_genes.filtered.bam
 samtools index mapped_TEonly.filtered.bam
-Rscript ../SCRIPT/_9_repetitiveness_score_.R mapped_TEonly.filtered.bam mapped_genes.filtered.bam ../6_SCANNING_RESULT/all_putative_ETEs_ids.txt
+Rscript ../SCRIPT/_8_repetitiveness_score_.R mapped_TEonly.filtered.bam mapped_genes.filtered.bam ../6_SCANNING_RESULT/all_putative_ETEs_ids.txt
+cd ..
+```
+
+### Step 7. Test 24-nt siRNA targeting
+```bash
+conda activate ete
+mkdir -p 9_SIRNA_VALIDATION
+cd 9_SIRNA_VALIDATION
+cp ../0_STARTING_FILES/siRNA24_filtered_unique_DNA.fasta ../0_STARTING_FILES/fine_cleaned_genes.fasta .
+bwa index fine_cleaned_genes.fasta
+bwa index ../6_SCANNING_RESULT/GENE_putative_ete.fasta
+bwa index ../6_SCANNING_RESULT/MRNA_putative_ete.fasta
+bwa aln -t $T fine_cleaned_genes.fasta siRNA24_filtered_unique_DNA.fasta > sirna_vs_all_genes.sai
+bwa samse -n 500 fine_cleaned_genes.fasta sirna_vs_all_genes.sai siRNA24_filtered_unique_DNA.fasta > sirna_vs_all_genes.sam
+bwa aln -t $T ../6_SCANNING_RESULT/GENE_putative_ete.fasta siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_genes.sai
+bwa samse -n 500 ../6_SCANNING_RESULT/GENE_putative_ete.fasta sirna_vs_ETE_genes.sai siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_genes.sam
+bwa aln -t $T ../6_SCANNING_RESULT/MRNA_putative_ete.fasta siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_exons.sai
+bwa samse -n 500 ../6_SCANNING_RESULT/MRNA_putative_ete.fasta sirna_vs_ETE_exons.sai siRNA24_filtered_unique_DNA.fasta > sirna_vs_ETE_exons.sam
+python ../SCRIPT/_9_score_ete_sirna.py --ete-list ../6_SCANNING_RESULT/all_putative_ETEs_ids.txt --sam-ete-genes sirna_vs_ETE_genes.sam --sam-ete-exons sirna_vs_ETE_exons.sam --sam-all-genes sirna_vs_all_genes.sam --all-genes-fasta fine_cleaned_genes.fasta -o sirna_score.tsv
 cd ..
 ```
 
 ### Step 8. Assess expression from RNA-seq data
-`bwa mem` keeps the original thread count (`-t 22`) for the same reason as in Step 7.
+`bwa mem` keeps the original thread count (`-t 22`) for the same reason as in Step 6.
 ```bash
 conda activate ete
 mkdir -p 10_EXPRESSION_VALIDATION/ref 10_EXPRESSION_VALIDATION/2_mapped 10_EXPRESSION_VALIDATION/3_filtered 10_EXPRESSION_VALIDATION/counts
@@ -214,7 +218,7 @@ for r1 in ../0_STARTING_FILES/RNA_READS/*_1.500k.fastq.gz; do
   lib=$(basename ${r1%_1.500k.fastq.gz})
   bwa mem -t 22 ref/Chr1A_cds.fasta $r1 $r2 | samtools view -b -F 4 - | samtools sort -@ $T -o 2_mapped/$lib.sorted.bam -
   samtools index 2_mapped/$lib.sorted.bam
-  python ../SCRIPT/_9_bam_length_similarity_filter.py 2_mapped/$lib.sorted.bam 3_filtered/$lib.filtered.bam
+  python ../SCRIPT/_8_bam_length_similarity_filter.py 2_mapped/$lib.sorted.bam 3_filtered/$lib.filtered.bam
   samtools index 3_filtered/$lib.filtered.bam
   samtools view -F 0x904 -q 10 3_filtered/$lib.filtered.bam | cut -f3 | sort | uniq -c | awk 'BEGIN{OFS="\t"} $2!="*"{print $2,$1}' > counts/$lib.counts.tsv
 done

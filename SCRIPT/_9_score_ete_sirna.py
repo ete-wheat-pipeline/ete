@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-_8_score_ete_sirna.py
+_9_score_ete_sirna.py
 
 Assigns the "siRNA coverage" score to the putative ETEs following the
 protocol of Ventimiglia et al. 2023 (Plant J 113:734-748), and computes the
@@ -32,7 +32,7 @@ Output columns (read by _11_final_score_and_check_aggregator.R):
 with category in {not_targeted, intronic, exonic}.
 
 Usage:
-    python3 _8_score_ete_sirna.py \\
+    python3 _9_score_ete_sirna.py \\
         --ete-list putative_ete_gene_list.txt \\
         --sam-ete-genes bwa_out/sirna_vs_ETE_genes.sam \\
         --sam-ete-exons bwa_out/sirna_vs_ETE_exons.sam \\

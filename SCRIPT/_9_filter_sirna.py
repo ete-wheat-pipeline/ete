@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-_8_filter_sirna.py - Filters a FASTA file of small RNAs (e.g. from plantsmallrnagenes):
+_9_filter_sirna.py - Filters a FASTA file of small RNAs (e.g. from plantsmallrnagenes):
   1. removes the sequences whose headers indicate a microRNA
   2. keeps only sequences exactly 24 nt long (changeable with -l)
   3. removes redundant sequences (keeps the first occurrence)
 
 Usage:
-    python3 ./_8_filter_sirna.py -i sirna_file.fasta -o sirna_filtered.fasta
+    python3 ./_9_filter_sirna.py -i sirna_file.fasta -o sirna_filtered.fasta
 """
 
 import argparse

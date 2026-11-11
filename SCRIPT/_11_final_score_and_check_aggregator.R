@@ -2,8 +2,9 @@
 # =============================================================================
 # _11_final_score_and_check_aggregator.R
 #
-# Merges the four validation scores of the putative ETEs (similarity to
-# TEs, siRNA, repetitiveness, expression) with the check information,
+# Merges the four validation scores of the putative ETEs (structural:
+# similarity to TEs, repetitiveness; functional: siRNA, expression) with
+# the check information,
 # derived from the files already produced in the previous steps:
 #   - HMM coverage per isoform: 6_SCANNING_RESULT/coverage_summary.tsv
 #   - isoform filter: isoforms of the gene passing the coverage filter out
@@ -48,8 +49,8 @@ f <- c(
   pep       = file.path(base, "0_STARTING_FILES", "fine_cleaned_pep.fasta"),
   gff       = file.path(base, "0_STARTING_FILES", "fine_cleaned_gff.gff3"),
   sim       = file.path(base, "7_TE_SIMILARITY_VALIDATION", "similarity_score_final.tsv"),
-  sirna     = file.path(base, "8_SIRNA_VALIDATION", "sirna_score.tsv"),
-  repet     = file.path(base, "9_REPETITIVENESS_VALIDATION", "repetitivity_result.tsv"),
+  repet     = file.path(base, "8_REPETITIVENESS_VALIDATION", "repetitivity_result.tsv"),
+  sirna     = file.path(base, "9_SIRNA_VALIDATION", "sirna_score.tsv"),
   expr      = file.path(base, "10_EXPRESSION_VALIDATION", "expression_result.tsv")
 )
 
@@ -76,12 +77,7 @@ sim <- read_tsv(f[["sim"]], col_names = c("locus", "similarity_score"),
   filter(locus != "locus") %>%
   mutate(similarity_score = as.numeric(similarity_score))
 
-sirna <- read_chr(f[["sirna"]]) %>%
-  transmute(locus,
-            sirna_score = as.numeric(sirna_score),
-            sirna_category = category)
-
-# _9_repetitiveness_score_.R calls the gene column "seqname"
+# _8_repetitiveness_score_.R calls the gene column "seqname"
 repet <- read_chr(f[["repet"]])
 if (!"locus" %in% names(repet) && "seqname" %in% names(repet)) {
   repet <- dplyr::rename(repet, locus = seqname)
@@ -91,6 +87,11 @@ repet <- repet %>%
             depth = as.numeric(depth),
             repetitivity_score = as.numeric(repetitivity_score))
 
+sirna <- read_chr(f[["sirna"]]) %>%
+  transmute(locus,
+            sirna_score = as.numeric(sirna_score),
+            sirna_category = category)
+
 expr <- read_chr(f[["expr"]]) %>%
   transmute(locus,
             max_expression = as.numeric(max_expression),
@@ -98,8 +99,8 @@ expr <- read_chr(f[["expr"]]) %>%
 
 modules <- list(
   similarity     = list(data = sim,   file = f[["sim"]],   col = "similarity_score"),
-  siRNA          = list(data = sirna, file = f[["sirna"]], col = "sirna_score"),
   repetitiveness = list(data = repet, file = f[["repet"]], col = "repetitivity_score"),
+  siRNA          = list(data = sirna, file = f[["sirna"]], col = "sirna_score"),
   expression     = list(data = expr,  file = f[["expr"]],  col = "score")
 )
 
@@ -202,13 +203,13 @@ if (n_unknown > 0) {
 # ------------------------------------------------------ per-locus table --
 per_locus <- ete %>%
   left_join(genes, by = "locus") %>%
-  left_join(sirna, by = "locus") %>%
-  left_join(repet, by = "locus") %>%
   left_join(sim,   by = "locus") %>%
+  left_join(repet, by = "locus") %>%
+  left_join(sirna, by = "locus") %>%
   left_join(expr,  by = "locus") %>%
-  mutate(n_score = (!is.na(sirna_score)) + (!is.na(repetitivity_score)) +
-                   (!is.na(similarity_score)) + (!is.na(score)),
-         SCORE_SUM = sirna_score + repetitivity_score + similarity_score + score) %>%
+  mutate(n_score = (!is.na(similarity_score)) + (!is.na(repetitivity_score)) +
+                   (!is.na(sirna_score)) + (!is.na(score)),
+         SCORE_SUM = similarity_score + repetitivity_score + sirna_score + score) %>%
   left_join(iso, by = "locus")
 
 # ---------------------------------------------------- per-isoform table --
@@ -216,7 +217,7 @@ final <- per_locus %>%
   left_join(cov, by = "locus") %>%
   left_join(fam, by = "query") %>%
   dplyr::select(locus, chr, start, end, strand, gene_len, qlen,
-                sirna_score, repetitivity_score, similarity_score, score,
+                similarity_score, repetitivity_score, sirna_score, score,
                 SCORE_SUM, n_score,
                 query, n_hit, n_blocks, covered_ali_len, percentage_ali_len,
                 passes_coverage, isoform_filter, isoforms_hit, numeric_ratio,

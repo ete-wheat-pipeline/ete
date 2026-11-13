@@ -13,6 +13,7 @@ Cowan RK, Hoen DR, Schoen DJ, Bureau TE. 2005. MUSTANG is a novel family of dome
 
 <img width="671" height="914" alt="immagine" src="https://github.com/user-attachments/assets/c7f6b077-dd5e-4a92-ba80-eb4cec8db0a2" />
 
+Figure. PETER workflow
 
 # How to run PETER pipeline
 

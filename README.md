@@ -5,15 +5,16 @@ Each putative ETE is then assessed using four complementary attributes: nucleoti
 The protocol can be used with a single representative protein per gene or with all annotated isoforms. Screening all isoforms is recommended at the discovery stage because exons derived from TE exaptation may be isoform specific. 
 PETER is applicable to any genome assembly; nevertheless, assembly completeness and contiguity directly influence detection performance, with high-contiguity assemblies generally providing more reliable gene predictions and, particularly, more comprehensive TE catalogues.
 
+
+<img width="671" height="914" alt="immagine" src="https://github.com/user-attachments/assets/c7f6b077-dd5e-4a92-ba80-eb4cec8db0a2" />
+
+Figure. PETER workflow.
+
 References:
 
 Blevins T, Podicheti R, Mishra V, Marasco M, Wang J, Rusch D, Tang H, Pikaard CS. 2015. Identification of Pol IV and RDR2-dependent precursors of 24 nt siRNAs guiding de novo DNA methylation in Arabidopsis. eLife. 4. 
 
 Cowan RK, Hoen DR, Schoen DJ, Bureau TE. 2005. MUSTANG is a novel family of domesticated transposase genes found in diverse angiosperms. Mol Biol Evol. 22:2084–2089. 
-
-<img width="671" height="914" alt="immagine" src="https://github.com/user-attachments/assets/c7f6b077-dd5e-4a92-ba80-eb4cec8db0a2" />
-
-Figure. PETER workflow
 
 # How to run PETER pipeline
 

@@ -11,6 +11,9 @@ Blevins T, Podicheti R, Mishra V, Marasco M, Wang J, Rusch D, Tang H, Pikaard CS
 
 Cowan RK, Hoen DR, Schoen DJ, Bureau TE. 2005. MUSTANG is a novel family of domesticated transposase genes found in diverse angiosperms. Mol Biol Evol. 22:2084–2089. 
 
+<img width="671" height="914" alt="immagine" src="https://github.com/user-attachments/assets/c7f6b077-dd5e-4a92-ba80-eb4cec8db0a2" />
+
+
 # How to run PETER pipeline
 
 You need only this file, `SCRIPT/` and `0_STARTING_FILES/`.

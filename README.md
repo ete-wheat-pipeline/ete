@@ -6,9 +6,10 @@ The protocol can be used with a single representative protein per gene or with a
 PETER is applicable to any genome assembly; nevertheless, assembly completeness and contiguity directly influence detection performance, with high-contiguity assemblies generally providing more reliable gene predictions and, particularly, more comprehensive TE catalogues.
 
 References:
-Blevins T, Podicheti R, Mishra V, Marasco M, Wang J, Rusch D, Tang H, Pikaard CS. 2015. Identification of Pol IV and RDR2-dependent precursors of 24 nt siRNAs guiding de novo DNA methylation in Arabidopsis. eLife. 4. https://doi.org/10.7554/eLife.09591
 
-Cowan RK, Hoen DR, Schoen DJ, Bureau TE. 2005. MUSTANG is a novel family of domesticated transposase genes found in diverse angiosperms. Mol Biol Evol. 22:2084–2089. https://doi.org/10.1093/molbev/msi202
+Blevins T, Podicheti R, Mishra V, Marasco M, Wang J, Rusch D, Tang H, Pikaard CS. 2015. Identification of Pol IV and RDR2-dependent precursors of 24 nt siRNAs guiding de novo DNA methylation in Arabidopsis. eLife. 4. 
+
+Cowan RK, Hoen DR, Schoen DJ, Bureau TE. 2005. MUSTANG is a novel family of domesticated transposase genes found in diverse angiosperms. Mol Biol Evol. 22:2084–2089. 
 
 # How to run PETER pipeline
 

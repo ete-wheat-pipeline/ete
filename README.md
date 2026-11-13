@@ -9,7 +9,7 @@ PETER is applicable to any genome assembly; nevertheless, assembly completeness 
 <img width="671" height="914" alt="immagine" src="https://github.com/user-attachments/assets/c7f6b077-dd5e-4a92-ba80-eb4cec8db0a2" />
 
 
-# References:
+References:
 
 Blevins T, Podicheti R, Mishra V, Marasco M, Wang J, Rusch D, Tang H, Pikaard CS. 2015. Identification of Pol IV and RDR2-dependent precursors of 24 nt siRNAs guiding de novo DNA methylation in Arabidopsis. eLife. 4. 
 

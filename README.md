@@ -1,4 +1,4 @@
-# 0INFO: run the pipeline
+# How to run the pipeline
 
 You need only this file, `SCRIPT/` and `0_STARTING_FILES/`.
 

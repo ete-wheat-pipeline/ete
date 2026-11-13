@@ -1,4 +1,12 @@
-# How to run the pipeline
+# PETER Protocol Overview
+
+PETER provides a genome-wide framework to search for ETEs among annotated plant genes by combining the detection of TE-protein signatures along with structural and transcriptional evidence (Fig. 1). The workflow begins with a curated collection of full-length TEs isolated from high-quality genome sequence. TE intact coding domains are grouped by superfamily or lineage and used to build Hidden Markov Model (HMM) profiles from overlapping alignment windows. These profiles are searched against the complete predicted proteome, and genes whose encoded proteins contain matching regions spanning at least 25 amino acids and 10% of their length are designated as putative ETEs.
+Each putative ETE is then assessed using four complementary attributes: nucleotide similarity to known TEs, genomic repetitiveness, 24-nt siRNA targeting, and expression. The first two assess whether candidates still closely resemble TEs by sequence similarity and genomic abundance. Over time, ETEs are expected to diverge from related TEs and generally occur at low copy numbers. The other two attributes examine the putative ETEs activity. Mapping 24-nt siRNAs identifies potential targeting by a class of small RNAs involved in TE silencing through RNA-directed DNA methylation (Blevins et al. 2015), whereas RNA-seq provides evidence of transcription in the sampled tissues. ETEs, as conventional genes, show higher expression and are less targeted by siRNA than TEs (Cowan et al. 2005). The scores assigned to these four attributes are combined for each putative ETE: those receiving +1 in every analysis reach a cumulative score of +4 and are considered validated ETEs under the PETER criteria. Finally, the extent of the HMM matching regions within each validated protein is used to distinguish TE-derived genes from TE-gene fusion events.
+The protocol can be used with a single representative protein per gene or with all annotated isoforms. Screening all isoforms is recommended at the discovery stage because exons derived from TE exaptation may be isoform specific. 
+PETER is applicable to any genome assembly; nevertheless, assembly completeness and contiguity directly influence detection performance, with high-contiguity assemblies generally providing more reliable gene predictions and, particularly, more comprehensive TE catalogues.
+
+
+# How to run PETER pipeline
 
 You need only this file, `SCRIPT/` and `0_STARTING_FILES/`.
 

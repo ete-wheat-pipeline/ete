@@ -257,13 +257,24 @@ cd ..
 
 
 
-**Published run, for comparison:**
+**Pipeline results:**
 
 | Result | Value |
-|---|---|
-| DANTE filtered domains | 129,180 |
-| DANTE_LTR elements | 30,439 |
-| TIR elements | 176 |
-| window HMMs | 522 |
-| putative ETE loci (Step 4) | 671 |
-| `SCORE_SUM = 4` (class 4) | 219: 6 TE-derived host genes, 213 TE–gene fusions |
+|---|---:|
+| TE-derived host genes | 6 |
+| TE–gene fusions | 213 |
+| **Total class 4 ETE loci** | **219** |
+
+**Score distribution across ETE loci:**
+
+| Score | Number of loci |
+|---:|---:|
+| -3 | 2 |
+| -2 | 13 |
+| -1 | 24 |
+| 0 | 79 |
+| 1 | 57 |
+| 2 | 231 |
+| 3 | 46 |
+| 4 | 219 |
+| **Total** | **671** |

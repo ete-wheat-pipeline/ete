@@ -259,16 +259,17 @@ cd ..
 
 **Pipeline results:**
 
-| Result | Value |
+| ETE | Number |
 |---|---:|
+| Total class 4 loci | 219 |
 | TE-derived host genes | 6 |
 | TE–gene fusions | 213 |
-| **Total class 4 ETE loci** | **219** |
 
 **Score distribution across ETE loci:**
 
 | Score | Number of loci |
 |---:|---:|
+| -4 | 0 |
 | -3 | 2 |
 | -2 | 13 |
 | -1 | 24 |

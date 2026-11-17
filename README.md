@@ -1,3 +1,4 @@
+
 # PETER Protocol Overview
 
 PETER provides a genome-wide framework to search for ETEs among annotated plant genes by combining the detection of TE-protein signatures along with structural and transcriptional evidence. The workflow begins with a curated collection of full-length TEs isolated from high-quality genome sequence. TE intact coding domains are grouped by superfamily or lineage and used to build Hidden Markov Model (HMM) profiles from overlapping alignment windows. These profiles are searched against the complete predicted proteome, and genes whose encoded proteins contain matching regions spanning at least 25 amino acids and 10% of their length are designated as putative ETEs.
@@ -6,7 +7,7 @@ The protocol can be used with a single representative protein per gene or with a
 PETER is applicable to any genome assembly; nevertheless, assembly completeness and contiguity directly influence detection performance, with high-contiguity assemblies generally providing more reliable gene predictions and, particularly, more comprehensive TE catalogues.
 
 
-<img width="671" height="914" alt="immagine" src="https://github.com/user-attachments/assets/c7f6b077-dd5e-4a92-ba80-eb4cec8db0a2" />
+<img width="671" height="910" alt="figure" src="https://github.com/user-attachments/assets/bf033091-8ffc-4196-b8aa-ba1d2bec9449" />
 
 
 References:

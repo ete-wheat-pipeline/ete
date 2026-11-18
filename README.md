@@ -10,12 +10,29 @@ PETER is applicable to any genome assembly; nevertheless, assembly completeness 
 <img width="10630" height="14483" alt="PETER_workflow_figure1_revised" src="https://github.com/user-attachments/assets/db65af15-0a82-4f18-8575-a08119d6e0b9" />
 
 
+PETER uses DANTE (v0.2.12), DANTE_LTR (v0.6.4.0), and DANTE_TIR (v0.3.2) (Novák et al. 2024), MAFFT (v7.453; Katoh and Standley 2013), SeqKit (v2.1.0; Shen et al. 2024), HMMER (v3.3; Eddy 2011), BLAST+ (v2.9.0; Camacho et al. 2009), BWA-MEM (v0.7.19; Li 2013), and SAMtools (v1.25; Li et al. 2009). Python 3.12.8 is used with SciPy (v1.18.1) and pysam (v0.24.1). R-based processing uses R 4.1 with tidyverse 1.3.2, remotes 2.4.2, and rhmmer (v0.1.0), together with Bioconductor 3.14 packages Biostrings 2.62.0, rtracklayer 1.54.0, GenomicAlignments 1.30.0, GenomicFeatures 1.46.1, BSgenome 1.62.0, and Rsamtools 2.10.0. 
+
 
 References:
 
 Blevins T, Podicheti R, Mishra V, Marasco M, Wang J, Rusch D, Tang H, Pikaard CS. 2015. Identification of Pol IV and RDR2-dependent precursors of 24 nt siRNAs guiding de novo DNA methylation in Arabidopsis. eLife. 4. 
 
 Cowan RK, Hoen DR, Schoen DJ, Bureau TE. 2005. MUSTANG is a novel family of domesticated transposase genes found in diverse angiosperms. Mol Biol Evol. 22:2084–2089. 
+
+Novák P, Hoštáková N, Neumann P, Macas J. 2024. DANTE and DANTE_LTR: lineage-centric annotation pipelines for long terminal repeat retrotransposons in plant genomes. NAR Genom Bioinform. 6:lqae113. 
+
+Katoh K, Standley DM. 2013. MAFFT multiple sequence alignment software version 7: improvements in performance and usability. Mol Biol Evol. 30:772-780.
+
+Shen W, Sipos B, Zhao L. 2024. SeqKit2: a Swiss army knife for sequence and alignment processing. iMeta. 3:e191. 
+
+Eddy SR. 2011. Accelerated profile HMM searches. PLoS Comput Biol. 7:e1002195. 
+
+Camacho C, Coulouris G, Avagyan V, Ma N, Papadopoulos J, Bealer K, Madden TL. 2009. BLAST+: architecture and applications. BMC Bioinformatics. 10:421. 
+
+Li H. 2013. Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM. arXiv [preprint]. arXiv:1303.3997. 
+
+Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R, 1000 Genome Project Data Processing Subgroup. 2009. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 25:2078-2079. 
+
 
 # How to run PETER pipeline
 

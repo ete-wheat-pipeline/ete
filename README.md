@@ -7,7 +7,8 @@ The protocol can be used with a single representative protein per gene or with a
 PETER is applicable to any genome assembly; nevertheless, assembly completeness and contiguity directly influence detection performance, with high-contiguity assemblies generally providing more reliable gene predictions and, particularly, more comprehensive TE catalogues.
 
 
-<img width="671" height="910" alt="figure" src="https://github.com/user-attachments/assets/bf033091-8ffc-4196-b8aa-ba1d2bec9449" />
+<img width="10630" height="14483" alt="PETER_workflow_figure1_revised" src="https://github.com/user-attachments/assets/db65af15-0a82-4f18-8575-a08119d6e0b9" />
+
 
 
 References:
